@@ -1,0 +1,24 @@
+# Data paths
+paths:
+  data_root: "data"
+  original_raw: "data/original_raw"
+  cleaned_raw: "data/cleaned_raw"
+  
+# Model paths
+models:
+  yolo: "model/yolov8n.pt"
+
+# YOLO detection settings
+yolo:
+  confidence_threshold: 0.5
+  person_class_id: 0
+
+# CleanVision settings
+cleanvision:
+  issue_types:
+    - exact_duplicates
+    - near_duplicates
+    - low_information
+    - dark
+    - light
+    - blurry
