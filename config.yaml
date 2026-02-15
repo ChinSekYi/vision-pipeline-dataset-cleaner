@@ -3,6 +3,8 @@ paths:
   data_root: "data"
   original_raw: "data/original_raw"
   cleaned_raw: "data/cleaned_raw"
+  person_only: "data/person_only"
+  validated: "data/validated"
   
 # Model paths
 models:
