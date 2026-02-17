@@ -9,18 +9,23 @@ paths:
 # Model paths
 models:
   yolo: "model/yolov8s.pt"
+  pose: "model/yolov8n-pose.pt"
 
 # YOLO detection settings
 yolo:
   confidence_threshold: 0.2
   person_class_id: 0
 
+# Pose estimation settings
+pose:
+  keypoint_threshold: 0.5
+
 # CleanVision settings
 cleanvision:
   issue_types:
     - exact_duplicates
     - near_duplicates
-    - low_information
-    - dark
-    - light
-    - blurry
+    #- low_information
+    #- dark
+    #- light
+    #- blurry
