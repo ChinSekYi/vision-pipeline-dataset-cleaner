@@ -2,6 +2,7 @@
 /docs
 /data
 .DS_Store
+/annotated_image
 
 # Model files
 *.pt

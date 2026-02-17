@@ -8,11 +8,11 @@ paths:
   
 # Model paths
 models:
-  yolo: "model/yolov8n.pt"
+  yolo: "model/yolov8s.pt"
 
 # YOLO detection settings
 yolo:
-  confidence_threshold: 0.5
+  confidence_threshold: 0.2
   person_class_id: 0
 
 # CleanVision settings
