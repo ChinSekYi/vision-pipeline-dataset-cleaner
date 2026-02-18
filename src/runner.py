@@ -2,6 +2,7 @@
 Runs the pipeline by applying each filter to a batch of images.
 """
 
+import time
 from pathlib import Path
 from typing import List
 
@@ -31,16 +32,20 @@ class PipelineRunner:
         # batch-style: each filter processes all images in sequence
         for i, f in enumerate(self.filters, 1):
             print(f"Running Phase {i}: {f.name}...")
+            start_time = time.time()
+            
             kept: List[Path] = []
             for img_path in current_images:
                 result: FilterResult = f.apply(img_path)
                 if result.keep:
                     kept.append(img_path)
 
+            elapsed_time = time.time() - start_time
             filtered_count = len(current_images) - len(kept)
             print(f"Phase {i}: {f.name}")
             print(f"  Images after filter: {len(kept)}")
-            print(f"  Filtered out: {filtered_count}\n")
+            print(f"  Filtered out: {filtered_count}")
+            print(f"  Time taken: {elapsed_time:.2f}s\n")
             current_images = kept
 
         # only images that passed all filters get copied to the final folder

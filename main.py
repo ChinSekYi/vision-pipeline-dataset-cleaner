@@ -1,20 +1,20 @@
 """
-Main entry point for the vision pipeline dataset cleaner.
-Runs the 5-phase filter pipeline on image data.
+Main entry point
 
 Usage:
-  python main.py                 # uses config.yaml paths
-  python main.py --input data/original_raw --output data/final
+  make run
+  make run-help
 """
 
 import argparse
 import sys
 from pathlib import Path
 
+from src.age_filter import AgeFilter
 from src.dedupe import Dedupe
+from src.fullbody_filter import FullBodyFilter
 from src.person_detector import PersonDetector
 
-# from src.fullbody_filter import FullBodyFilter
 # from src.face_filter import FaceFilter
 # from src.age_filter import AgeFilter
 # from src.advertisement_filter import AdvertisementFilter
@@ -47,9 +47,8 @@ def main():
     filters = [
         Dedupe(config_path),
         PersonDetector(config_path),
-        # FullBodyFilter(config_path),
-        # FaceFilter(config_path),
-        # AgeFilter(config_path),
+        FullBodyFilter(config_path),
+        AgeFilter(config_path),
         # AdvertisementFilter(config_path),
     ]
 

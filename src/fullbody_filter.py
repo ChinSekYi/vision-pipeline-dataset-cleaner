@@ -1,4 +1,5 @@
 """Phase 3: Validate full body visibility using YOLOv8-Pose."""
+
 from pathlib import Path
 
 import cv2
