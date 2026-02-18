@@ -37,3 +37,6 @@ cleanvision:
     #- dark
     #- light
     #- blurry
+
+imagededup:
+  max_distance_threshold: 10 #(Lower = stricter (only very similar images). Higher = more aggressive (near‑duplicates included).)
