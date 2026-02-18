@@ -12,8 +12,8 @@ import sys
 from pathlib import Path
 
 from src.dedupe import Dedupe
+from src.person_detector import PersonDetector
 
-# from src.person_detector import PersonDetector
 # from src.fullbody_filter import FullBodyFilter
 # from src.face_filter import FaceFilter
 # from src.age_filter import AgeFilter
@@ -45,8 +45,8 @@ def main():
 
     # Initialize all filters
     filters = [
-        Dedupe(config_path)
-        # PersonDetector(config_path),
+        Dedupe(config_path),
+        PersonDetector(config_path),
         # FullBodyFilter(config_path),
         # FaceFilter(config_path),
         # AgeFilter(config_path),
