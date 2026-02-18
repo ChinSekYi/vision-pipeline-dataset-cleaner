@@ -1,6 +1,4 @@
-# Data paths
 paths:
-  data_root: "data"
   original_raw: "data/original_raw"
   cleaned_raw: "data/cleaned_raw"
   person_only: "data/person_only"
@@ -8,40 +6,24 @@ paths:
   age_filtered: "data/age_filtered"
   ad_filtered: "data/final"
   
-# Model paths
 models:
   yolo: "model/yolov8s.pt"
   pose: "model/yolov8n-pose.pt"
-  age_gender: "model/age_gender_ssrnet.onnx"
 
-# YOLO detection settings
 yolo:
-  confidence_threshold: 0.2
+  confidence_threshold: 0.5
   person_class_id: 0
 
-# Pose estimation settings
 pose:
   keypoint_threshold: 0.5
 
-# Face detection settings
-face:
-  model_path: "model/blaze_face_short_range.tflite"
-  min_detection_confidence: 0.1
-  confidence_threshold_phase3: 0.40
-
-# Age estimation settings
 age:
-  model_path: "model/age_gender_ssrnet.onnx"
   min_age: 13
-  confidence_threshold: 0.5
 
-# Advertisement detection settings
 advertisement:
-  # CLIP-based semantic detection
   clip_model: "ViT-B-32"            # CLIP model variant
   clip_margin: 0.03                 # Ad score must exceed natural by this margin
 
-# CleanVision settings
 cleanvision:
   issue_types:
     - exact_duplicates
