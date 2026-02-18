@@ -4,7 +4,7 @@ paths:
   original_raw: "data/original_raw"
   cleaned_raw: "data/cleaned_raw"
   person_only: "data/person_only"
-  validated: "data/validated"
+  fullbody_filtered: "data/fullbody_filtered"
   age_filtered: "data/age_filtered"
   ad_filtered: "data/final"
   
@@ -37,20 +37,9 @@ age:
 
 # Advertisement detection settings
 advertisement:
-  # OCR-based text detection
-  ocr_text_threshold: 0.3           # Min confidence for OCR text detection
-  ocr_high_confidence: 0.8          # High-confidence text threshold
-  ocr_min_regions: 2                # Threshold for multiple text regions
-  
   # CLIP-based semantic detection
   clip_model: "ViT-B-32"            # CLIP model variant
   clip_margin: 0.03                 # Ad score must exceed natural by this margin
-  
-  # Ensemble voting logic
-  ensemble_mode: "voting"           # "voting" (both agree) or "any" (either method)
-  ocr_weight: 0.4                   # OCR voting weight
-  clip_weight: 0.6                  # CLIP voting weight (semantic, generalizes better)
-  decision_threshold: 0.5           # Weighted score threshold for flagging as ad
 
 # CleanVision settings
 cleanvision:
