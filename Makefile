@@ -3,8 +3,11 @@ install:
 		pip install -r requirements.txt
 
 format:
-	isort *.py
-	black *.py
+	isort .
+	black .
 
 run:
-	python main.py
+	python main.py --input data/original_raw --output data/final
+
+run-help:
+	python main.py --help

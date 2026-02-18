@@ -1,18 +1,21 @@
+"""
+Runs the pipeline by applying each filter to a batch of images.
+"""
+
 from dataclasses import dataclass
-from typing import Any, Dict
 from pathlib import Path
 
 
 @dataclass
 class FilterResult:
-    # every filter returns a FilterResult
+    """Result for a single image after a filter is applied."""
+
     keep: bool
-    metadata: Dict[str, Any]
-    reason: str | None = None
 
 
-class BaseFilter: # per image
+class BaseFilter:  # per image
     name: str = "base"
 
-    def apply(self, image_path: Path, metadata: Dict[str, Any]) -> FilterResult:
+    def apply(self, image_path: Path) -> FilterResult:
+        """Apply the filter to one image."""
         raise NotImplementedError
