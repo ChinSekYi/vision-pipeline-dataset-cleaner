@@ -7,7 +7,6 @@ from pathlib import Path
 
 import cv2
 import yaml
-
 from insightface.app import FaceAnalysis
 
 from .base import BaseFilter, FilterResult
@@ -30,7 +29,7 @@ class AgeFilter(BaseFilter):
         """Load InsightFace model once."""
         if FaceAnalysis is None:
             raise ImportError("insightface not installed")
-        
+
         # Suppress InsightFace verbose output
         with redirect_stdout(StringIO()), redirect_stderr(StringIO()):
             self.model = FaceAnalysis(providers=["CPUExecutionProvider"])

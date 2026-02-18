@@ -10,14 +10,13 @@ import argparse
 import sys
 from pathlib import Path
 
+from src.advertisement_filter import AdvertisementFilter
 from src.age_filter import AgeFilter
 from src.dedupe import Dedupe
 from src.fullbody_filter import FullBodyFilter
 from src.person_detector import PersonDetector
 
 # from src.face_filter import FaceFilter
-# from src.age_filter import AgeFilter
-# from src.advertisement_filter import AdvertisementFilter
 from src.runner import PipelineRunner
 
 
@@ -49,7 +48,7 @@ def main():
         PersonDetector(config_path),
         FullBodyFilter(config_path),
         AgeFilter(config_path),
-        # AdvertisementFilter(config_path),
+        AdvertisementFilter(config_path),
     ]
 
     # Run pipeline

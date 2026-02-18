@@ -33,7 +33,7 @@ class PipelineRunner:
         for i, f in enumerate(self.filters, 1):
             print(f"Running Phase {i}: {f.name}...")
             start_time = time.time()
-            
+
             kept: List[Path] = []
             for img_path in current_images:
                 result: FilterResult = f.apply(img_path)
