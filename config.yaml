@@ -21,8 +21,8 @@ age:
   min_age: 13
 
 advertisement:
-  clip_model: "ViT-B-32"            # CLIP model variant
-  clip_margin: 0.03                 # Ad score must exceed natural by this margin
+  clip_model: "ViT-B-32"            
+  clip_margin: 0.03   # ad score must exceed natural by this margin
 
 cleanvision:
   issue_types:
