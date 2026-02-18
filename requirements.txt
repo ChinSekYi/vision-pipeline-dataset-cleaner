@@ -13,3 +13,4 @@ cleanvision==0.3.7
 tqdm==4.67.1
 gdown==5.2.1
 imagededup
+git+https://github.com/openai/CLIP.git
