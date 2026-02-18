@@ -12,7 +12,7 @@ from .base import BaseFilter, FilterResult
 class PipelineRunner:
     """Batch-style filter runner for a folder of images."""
 
-    def __init__(self, filters: List[BaseFilter]):
+    def __init__(self, filters: List[BaseFilter], config_path: str = "config.yaml"):
         self.filters = filters
 
     def run(self, input_dir: Path, output_dir: Path) -> None:
@@ -25,7 +25,7 @@ class PipelineRunner:
                 f.setup(input_dir)
 
         images = sorted(input_dir.glob("*.png"))
-        current_images = images  # working list of images still in the pipeline
+        current_images = images
         print(f"\nPhase 0: Original")
         print(f"  Total images: {len(current_images)}\n")
 
@@ -48,7 +48,7 @@ class PipelineRunner:
             print(f"  Time taken: {elapsed_time:.2f}s\n")
             current_images = kept
 
-        # only images that passed all filters get copied to the final folder
+        # Copy final images to output
         for img_path in current_images:
             target = output_dir / img_path.name
             if not target.exists():

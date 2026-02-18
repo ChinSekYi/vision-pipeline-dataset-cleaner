@@ -9,5 +9,8 @@ format:
 run:
 	python main.py --input data/original_raw --output data/final
 
+evaluate:
+	python evaluate.py
+
 run-help:
 	python main.py --help

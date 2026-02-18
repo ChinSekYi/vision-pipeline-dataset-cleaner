@@ -55,7 +55,7 @@ def main():
     print(f"Starting pipeline: {input_dir} -> {output_dir}")
     print(f"Filters: {' -> '.join(f.name for f in filters)}")
 
-    runner = PipelineRunner(filters)
+    runner = PipelineRunner(filters, config_path)
     runner.run(input_dir, output_dir)
 
     print(f"Pipeline complete. Check {output_dir}")

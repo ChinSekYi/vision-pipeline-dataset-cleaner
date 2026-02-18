@@ -32,8 +32,11 @@ class AgeFilter(BaseFilter):
 
         # Suppress InsightFace verbose output
         with redirect_stdout(StringIO()), redirect_stderr(StringIO()):
-            self.model = FaceAnalysis(providers=["CPUExecutionProvider"])
-            self.model.prepare(ctx_id=0, det_size=(640, 640))
+            self.model = FaceAnalysis(
+                allowed_modules=["detection", "genderage"],
+                providers=["CPUExecutionProvider"],
+            )
+            self.model.prepare(ctx_id=-1, det_size=(640, 480))
 
     def apply(self, image_path: Path) -> FilterResult:
         """Check if image has face with age >= min_age."""
