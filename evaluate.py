@@ -43,7 +43,7 @@ def main():
 
     # Known children test
     print(f"\nKnown children check (age < 13):")
-    known_children = ["crop (162).png", "crop (884).png"]
+    known_children = ["crop (524).png"]
 
     children_passed = 0
     for child in known_children:
@@ -52,6 +52,18 @@ def main():
             children_passed += 1
         else:
             print(f"  [FAIL] {child} (should be filtered)")
+
+    # Known mannequins test
+    print(f"\nKnown mannequins check:")
+    known_mannequins = ["crop (829).png", "crop (910).png"]
+
+    mannequins_passed = 0
+    for mannequin in known_mannequins:
+        if mannequin not in final_images:
+            print(f"  [PASS] {mannequin}")
+            mannequins_passed += 1
+        else:
+            print(f"  [FAIL] {mannequin} (should be filtered)")
 
     # Known ads test
     print(f"\nKnown ads check:")
@@ -84,6 +96,7 @@ def main():
     all_passed = (
         all(r for _, r in checks)
         and children_passed == len(known_children)
+        and mannequins_passed == len(known_mannequins)
         and ads_passed == len(known_ads)
     )
     print(f"\n{'All checks passed' if all_passed else 'Some checks failed'}")

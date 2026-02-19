@@ -2,10 +2,10 @@
 Phase 1: Remove duplicate images using imagededup (PHash).
 """
 
+import logging
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
-import logging
 from typing import Set
 
 import yaml

@@ -1,89 +1,77 @@
-"""Phase 5: Filter advertisements using EasyOCR."""
+"""Phase 5: Filter advertisements using CLIP visual-semantic matching."""
 
 import warnings
 from pathlib import Path
 
+import torch
 import yaml
+from PIL import Image
 
 try:
-    import easyocr
+    import clip
 except ImportError:
-    easyocr = None
+    clip = None
 
 from .base import BaseFilter, FilterResult
 
-# Suppress PyTorch MPS pin_memory warnings from EasyOCR
+# Suppress PyTorch MPS pin_memory warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="torch")
 
 
 class AdvertisementFilter(BaseFilter):
-    """Remove images that are advertisements based on OCR text detection."""
+    """Remove images that are advertisements based on CLIP image-text similarity."""
 
     name = "advertisement_filter"
 
     def __init__(self, config_path: str = "config.yaml"):
         with open(config_path, "r") as f:
             self.config = yaml.safe_load(f)
-        self.reader = None
-        self.promotional_keywords = [
-            "sale",
-            "offer",
-            "discount",
-            "off",
-            "limited",
-            "buy",
-            "price",
-            "promotion",
-            "deal",
-            "promo",
-            "save",
-            "free",
-            "new",
-            "now",
-            "shop",
-            "order",
-            "collection",
-            "exclusive",
-            "%",
-            "$",
-            "€",
-            "£",
+
+        ad_config = self.config.get("advertisement", {})
+        self.model = None
+        self.preprocess = None
+        self.device = ad_config.get("clip_device", "cpu")
+        self.model_name = ad_config.get("clip_model", "ViT-B/32")
+        self.prompts = [
+            ad_config.get(
+                "ad_prompt", "a promotional advertisement or marketing image"
+            ),
+            ad_config.get("natural_prompt", "a candid photo of a person"),
         ]
 
     def setup(self, input_dir: Path) -> None:
-        """Load EasyOCR reader once."""
-        if easyocr is None:
-            raise ImportError("easyocr not installed")
-        self.reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+        """Load CLIP model once."""
+        if clip is None:
+            raise ImportError(
+                "CLIP not installed. Install with: pip install git+https://github.com/openai/CLIP.git"
+            )
+        self.model, self.preprocess = clip.load(self.model_name, device=self.device)
 
     def apply(self, image_path: Path) -> FilterResult:
         """Check if image is NOT an advertisement (keep if not ad)."""
         try:
-            # Read image and extract text
-            results = self.reader.readtext(str(image_path))
+            # Load and preprocess image
+            image = Image.open(str(image_path)).convert("RGB")
+            image_input = self.preprocess(image).unsqueeze(0).to(self.device)
 
-            if not results:
-                # No text detected - not an ad
-                return FilterResult(keep=True)
+            # Encode image and text
+            with torch.no_grad():
+                image_features = self.model.encode_image(image_input)
+                text_features = self.model.encode_text(
+                    clip.tokenize(self.prompts).to(self.device)
+                )
 
-            # Extract all text
-            full_text = " ".join([text for (bbox, text, conf) in results])
-            full_text_upper = full_text.upper()
+            # Normalize and compute similarity
+            image_features /= image_features.norm(dim=-1, keepdim=True)
+            text_features /= text_features.norm(dim=-1, keepdim=True)
 
-            # Check for promotional keywords with confidence threshold
-            ocr_confidence_threshold = 0.3
+            similarity = (image_features @ text_features.T).squeeze(0).cpu().numpy()
 
-            for keyword in self.promotional_keywords:
-                if keyword.upper() in full_text_upper:
-                    # Find confidence for this keyword match
-                    for bbox, text, conf in results:
-                        if keyword.upper() in text.upper():
-                            # If high-confidence keyword found, it's an ad
-                            if conf >= ocr_confidence_threshold:
-                                return FilterResult(keep=False)
+            # Classify: advertisement if first prompt (ad) has higher similarity
+            is_advertisement = similarity[0] > similarity[1]
 
-            # No high-confidence promotional keywords - not an ad
-            return FilterResult(keep=True)
+            # Keep if NOT an advertisement
+            return FilterResult(keep=not is_advertisement)
 
         except Exception:
             # On error, keep the image (don't filter it out)

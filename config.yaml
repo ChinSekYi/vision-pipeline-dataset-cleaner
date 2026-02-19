@@ -26,8 +26,10 @@ age:
   min_age: 13
 
 advertisement:
-  clip_model: "ViT-B-32"            
-  clip_margin: 0.03   # ad score must exceed natural by this margin
+  clip_model: "ViT-B/32"
+  clip_device: "cpu"
+  ad_prompt: "a promotional advertisement or marketing image"
+  natural_prompt: "a candid photo of a person"
 
 cleanvision:
   issue_types:
