@@ -138,7 +138,7 @@ Known Errors:
 
 
 ## Future development
-- to improve on development:
+- To improve on development:
     - use mlflow for experimental tracking
     - use dvc for dataset tracking
     - use logging for debugging
