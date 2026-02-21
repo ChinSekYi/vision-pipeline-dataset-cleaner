@@ -45,7 +45,7 @@ def main():
     # Initialize all filters
     filters = [
         Dedupe(config_path),
-        #PersonDetector(config_path), #removed phase 2
+        # PersonDetector(config_path), #removed phase 2
         FullBodyFilter(config_path),
         AgeFilter(config_path),
         AdvertisementFilter(config_path),

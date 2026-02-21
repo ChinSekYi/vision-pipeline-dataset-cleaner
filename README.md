@@ -25,8 +25,8 @@ gdown --folder https://drive.google.com/drive/folders/GOOGLE_DRIVE_FILE_ID -O da
 
 ### 3. Run Pipeline
 ```bash
-make run       # Execute full pipeline (1,147 → 168 images)
-make evaluate  # Validate results and check accuracy
+make run       # Execute full pipeline
+make evaluate  # Validate results
 ```
 
 **Expected output:** 168 cleaned images in `data/final/` with 97.62% accuracy
@@ -121,17 +121,15 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
 ```
 
 ## Results
-
-
-
 - Retention: 14.9% of original (171/1,147)
 - Manual validation: 171 images in final set
 - Performance (1,147 images on CPU, ~51 seconds total):
     - Phase 1 (Dedupe): <1s (999 images)
-    - Phase 2: **Removed**
+    - Phase 2: Removed
     - Phase 3 (Full-Body): 27.43s (227 images)
     - Phase 4 (Age Filter): 13.24s (172 images)
     - Phase 5 (Ad Detection): 10.60s (171 images)
+    - **Total time taken:** 51.27s
 
 ### Note on Pipeline Change
 - When Phase 2 (Person Detection) was included, images flowed from Phase 1 (999) → Phase 2 (person detection) (534) → Phase 3 (full-body) (201). - After removing Phase 2, all 999 deduplicated images go directly to full-body filtering, resulting in 227 images passing Phase 3. This means FullBodyFilter now handles both person and full-body detection, and more images are evaluated for full-body presence.
