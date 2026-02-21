@@ -33,13 +33,13 @@ make evaluate  # Validate results
 
 ## Pipeline Overview
 
-| Phase | Method | Input → Output |
-|-------|--------|---|
-| 1 | imagededup PHash (remove duplicates) | 1,147 → 999 |
-| 2 | Person Detection (Removed) | — |
-| 3 | YOLOv8-Pose (full-body detection) | 999 → 227 |
-| 4 | InsightFace (face and age detection) | 227 → 172 |
-| 5 | CLIP (ad detection) | 172 → 171 |
+| Phase | Method | Input → Output | Precision |
+|-------|--------|---|-----------|
+| 1 | imagededup PHash (remove duplicates) | 1,147 → 999 | - |
+| 2 | Person Detection (Removed) | — | — |
+| 3 | YOLOv8-Pose (full-body detection) | 999 → 227 | 85.4% |
+| 4 | InsightFace (face and age detection) | 227 → 172 | 95.93% |
+| 5 | CLIP (ad detection) | 172 → 171 | 96.4% |
 
 > **Note:** Phase 2 (Person Detection) was removed as FullBodyFilter now implicitly handles person detection.
 
@@ -95,9 +95,14 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
 - Decision: Face detection using InsightFace is more accurate than MediaPipe. Single inference handles both detection and age estimation, pre-trained on large datasets
 - Notebook: `notebooks/04_age_estimation.ipynb`
 
+
 #### Phase 5: Advertisement Detection (CLIP)
 - Method: CLIP visual-semantic matching with prompts: "promotional advertisement or marketing image" vs "candid photo of a person"
-- Decision: CLIP chosen over EasyOCR (50% vs 0% recall on known ads). OCR failed on brand-only/text-free ads. Revised prompts reduced false positives from 65% to 0.6% while maintaining recall. Trade-off: 5x slower but critical for precision
+- Decision: CLIP chosen over EasyOCR after experiments on an expanded ad set (n=30):
+    - CLIP achieved 100% detection rate (30/30 ads detected), including brand-only and visual ads
+    - OCR detected only 40% (12/30), missing brand-only/text-free ads
+    - Prompt engineering was key to reducing false positives and improving robustness
+    - Precision is prioritized: CLIP minimizes invalid images in the final set
 - Notebook: `notebooks/05_advertisement_detection.ipynb`
 
 ## Project Structure
@@ -120,10 +125,11 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
     └── final/           # Output
 ```
 
+
 ## Results
 - Retention: 14.9% of original (171/1,147)
 - Manual validation: 171 images in final set
-- Performance (1,147 images on CPU, ~51 seconds total):
+- Performance (1,147 images):
     - Phase 1 (Dedupe): <1s (999 images)
     - Phase 2: Removed
     - Phase 3 (Full-Body): 27.43s (227 images)
@@ -131,17 +137,13 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
     - Phase 5 (Ad Detection): 10.60s (171 images)
     - **Total time taken:** 51.27s
 
+
 ### Note on Pipeline Change
-- When Phase 2 (Person Detection) was included, images flowed from Phase 1 (999) → Phase 2 (person detection) (534) → Phase 3 (full-body) (201). - After removing Phase 2, all 999 deduplicated images go directly to full-body filtering, resulting in 227 images passing Phase 3. This means FullBodyFilter now handles both person and full-body detection, and more images are evaluated for full-body presence.
+Previously, Phase 2 (Person Detection) filtered images before full-body validation, resulting in: 999 (deduped) → 534 (person detected) → 201 (full-body).
 
-> **Summary:** With Phase 2 removed, Phase 1 to 3 now goes from 999 → 227 images (previously 999 → 534 → 201), simplifying the pipeline and relying on FullBodyFilter for both person and full-body filtering.
+Now, with Phase 2 removed, all 999 deduplicated images go directly to full-body filtering: 999 → 227. FullBodyFilter now handles both person and full-body detection, simplifying the pipeline and increasing the number of images evaluated for full-body presence.
 
-> **Note:** Person Detection phase was removed; FullBodyFilter now handles person detection.
-
-Known Errors:
-- False Positives (FP): 2 invalid images kept (1 child passed age filter, 1 ad passed ad detector)
-- False Negatives (FN): 2 valid images discarded (2 mannequins filtered by full-body validator)
-- Risk Priority: FP > FN (invalid data in final set is worse than over-filtering)
+> **Summary:** Removing Phase 2 streamlines the pipeline and relies on FullBodyFilter for both person and full-body filtering.
 
 
 ## Future development
