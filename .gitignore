@@ -1,7 +1,7 @@
 # others
 /docs
-/data_
-/model_
+/data
+/model
 .DS_Store
 /annotated_image
 /archive
