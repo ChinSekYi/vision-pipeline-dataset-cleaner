@@ -1,6 +1,6 @@
 # Vision Pipeline Dataset Cleaner
 
-Automated pipeline curating 1,147 raw images → 168 high-quality person crops with 97.62% accuracy.
+Automated pipeline curating 1,147 raw images → 171 high-quality person crops.
 
 ## Quick Start
 
@@ -36,10 +36,12 @@ make evaluate  # Validate results and check accuracy
 | Phase | Method | Input → Output |
 |-------|--------|---|
 | 1 | imagededup PHash (remove duplicates) | 1,147 → 999 |
-| 2 | YOLOv8s (person detection) | 999 → 534 |
-| 3 | YOLOv8-Pose (full-body detection) | 534 → 201 |
-| 4 | InsightFace (face and age detection) | 201 → 169 |
-| 5 | CLIP (ad detection) | 169 → 168 |
+| 2 | Person Detection (Removed) | — |
+| 3 | YOLOv8-Pose (full-body detection) | 999 → 227 |
+| 4 | InsightFace (face and age detection) | 227 → 172 |
+| 5 | CLIP (ad detection) | 172 → 171 |
+
+> **Note:** Phase 2 (Person Detection) was removed as FullBodyFilter now implicitly handles person detection.
 
 ## Metrics Definition
 - Positive (P) = Valid image that should be kept (person, full-body, age ≥ 13, no ads)
@@ -80,10 +82,8 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
 - Decision: Prioritize scalability and faster duplicate mining for larger datasets. Keep low-quality images since they may be valid in later phases
 - Notebook: `notebooks/01_data_quality.ipynb`
 
-#### Phase 2: Person Detection (YOLOv8s)
-- Method: Pre-trained YOLOv8s detecting person class (confidence ≥ 0.5)
-- Decision: Fast, no fine-tuning needed, standard object detector
-- Notebook: `notebooks/02_person_detection.ipynb`
+#### Phase 2: Person Detection (YOLOv8s) - **Removed**
+- **Note:** Person detection was found to be redundant. FullBodyFilter now implicitly filters out images without people.
 
 #### Phase 3: Full-Body Validation (YOLOv8-Pose)
 - Method: Keypoint detection requiring visible head (nose) AND legs (knees/ankles)
@@ -122,14 +122,23 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
 
 ## Results
 
-- Retention: 14.6% of original (168/1,147)
-- Manual validation: 4 errors / 168 images → 97.62% accuracy
-- Performance (1,147 images on CPU, ~139 seconds total):
+
+
+- Retention: 14.9% of original (171/1,147)
+- Manual validation: 171 images in final set
+- Performance (1,147 images on CPU, ~51 seconds total):
     - Phase 1 (Dedupe): <1s (999 images)
-    - Phase 2 (Person Detection): 66.04s (534 images, ~8 imgs/sec)
-    - Phase 3 (Full-Body): 40.81s (201 images, ~5 imgs/sec)
-    - Phase 4 (Age Filter): 14.19s (169 images, ~12 imgs/sec)
-    - Phase 5 (Ad Detection): 17.68s (168 images, ~10 imgs/sec)
+    - Phase 2: **Removed**
+    - Phase 3 (Full-Body): 27.43s (227 images)
+    - Phase 4 (Age Filter): 13.24s (172 images)
+    - Phase 5 (Ad Detection): 10.60s (171 images)
+
+### Note on Pipeline Change
+- When Phase 2 (Person Detection) was included, images flowed from Phase 1 (999) → Phase 2 (person detection) (534) → Phase 3 (full-body) (201). - After removing Phase 2, all 999 deduplicated images go directly to full-body filtering, resulting in 227 images passing Phase 3. This means FullBodyFilter now handles both person and full-body detection, and more images are evaluated for full-body presence.
+
+> **Summary:** With Phase 2 removed, Phase 1 to 3 now goes from 999 → 227 images (previously 999 → 534 → 201), simplifying the pipeline and relying on FullBodyFilter for both person and full-body filtering.
+
+> **Note:** Person Detection phase was removed; FullBodyFilter now handles person detection.
 
 Known Errors:
 - False Positives (FP): 2 invalid images kept (1 child passed age filter, 1 ad passed ad detector)

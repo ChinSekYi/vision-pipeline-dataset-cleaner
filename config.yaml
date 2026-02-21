@@ -3,10 +3,10 @@ paths:
   original_raw: "data/original_raw"
   
   # Notebook experiment outputs (intermediate steps)
-  cleaned_raw: "data/notebook/cleaned_raw"
-  person_only: "data/notebook/person_only"
-  fullbody_filtered: "data/notebook/fullbody_filtered"
-  age_filtered: "data/notebook/age_filtered"
+  cleaned_raw: "data/cleaned_raw"
+  person_only: "data/person_only"
+  fullbody_filtered: "data/fullbody_filtered"
+  age_filtered: "data/age_filtered"
   
   # Production pipeline final output
   ad_filtered: "data/final"
