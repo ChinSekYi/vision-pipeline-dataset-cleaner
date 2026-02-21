@@ -1,6 +1,6 @@
 # Vision Pipeline Dataset Cleaner
 
-Automated pipeline curating 1,147 raw images → 171 high-quality person crops.
+Automated pipeline curating 1,147 raw images to a final set of 171 high-quality, full-body images of people, with most advertisements and mannequins filtered out. A small number of ads or mannequins may remain due to pipeline limitations. The pipeline achieves 96.4% precision on the final, curated dataset.
 
 ## Quick Start
 
@@ -29,7 +29,7 @@ make run       # Execute full pipeline
 make evaluate  # Validate results
 ```
 
-**Expected output:** 168 cleaned images in `data/final/` with 97.62% accuracy
+**Expected output:** 168–171 cleaned images in `data/final/` with 96.4% precision and 97.6% accuracy
 
 ## Pipeline Overview
 
@@ -44,24 +44,17 @@ make evaluate  # Validate results
 > **Note:** Phase 2 (Person Detection) was removed as FullBodyFilter now implicitly handles person detection.
 
 ## Metrics Definition
-- Positive (P) = Valid image that should be kept (person, full-body, age ≥ 13, no ads)
-- Negative (N) = Invalid image that should be filtered (duplicate, not-person, incomplete body, age < 13, has ads)
-- Confusion Matrix:
-    | | **Predicted KEEP** | **Predicted FILTER** |
-    |---|---|---|
-    | **Actually Valid (P)** | TP (correct keep) | FN (over-filtered) |
-    | **Actually Invalid (N)** | FP (wrong keep) | TN (correct filter) |
-
-Performance Metrics:
-- True Positive (TP): Valid image correctly kept
-- True Negative (TN): Invalid image correctly filtered
-- False Positive (FP): Invalid image incorrectly kept — contaminates final dataset
-- False Negative (FN): Valid image incorrectly filtered — loses good data
-- Accuracy = (TP + TN) / (TP + TN + FP + FN)
-
-In this project, we prioritise precision:<br>
-- Precision = TP / (TP + FP) = "Of the images we kept, how many are actually valid?"
-- invalid data in final set is worse than over-filtering
+- **Positive (P):** Valid image to keep (person, full-body, age ≥ 13, no ads)
+- **Negative (N):** Invalid image to filter (duplicate, not-person, incomplete body, age < 13, has ads)
+- **Confusion Matrix:**
+    - TP: Valid image kept
+    - FP: Invalid image kept (contaminates dataset)
+    - TN: Invalid image filtered
+    - FN: Valid image filtered (lost data)
+- **Key metrics:**
+    - Precision = TP / (TP + FP)  (priority: minimize FP)
+    - Accuracy = (TP + TN) / (TP + TN + FP + FN)
+    - We prioritize precision: better to over-filter than keep invalid data.
 
 ## System Design
 
@@ -125,10 +118,10 @@ Note: In-memory processing is efficient and avoids redundant file I/O.
     └── final/           # Output
 ```
 
-
 ## Results
 - Retention: 14.9% of original (171/1,147)
 - Manual validation: 171 images in final set
+- Final precision: **96.4%** (on 1,147-image dataset)
 - Performance (1,147 images):
     - Phase 1 (Dedupe): <1s (999 images)
     - Phase 2: Removed
